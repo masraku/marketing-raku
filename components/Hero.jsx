@@ -125,7 +125,7 @@ const CodeWindow = () => {
             <span className="text-gray-400">butuhWebsite</span>) {"{"}
           </div>
           <div className="pl-4">
-            <span className="text-white">rakuuu</span>.
+            <span className="text-white">masrakuuu</span>.
             <span className="text-gray-400">buatkan</span>();
           </div>
           <div>{"}"}</div>
