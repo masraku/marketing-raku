@@ -56,7 +56,7 @@ export default function Footer() {
             <h3 className="font-bold text-white mb-4">Hubungi Kami</h3>
             <div className="flex gap-4">
               <a
-                href="https://wa.me/6281234567890"
+                href="https://wa.me/6282146150660"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-2 rounded-lg bg-white/5 hover:bg-white/10 hover:text-white text-gray-400 transition-all"
