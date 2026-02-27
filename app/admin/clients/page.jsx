@@ -46,7 +46,7 @@ export default function ClientsPage() {
       });
       const d = await r.json();
       if (!r.ok) {
-        setError(d.error);
+        setError(d.detail ? `${d.error}: ${d.detail}` : d.error);
         return;
       }
       setClients((p) => [d, ...p]);

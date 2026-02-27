@@ -56,7 +56,7 @@ export async function POST(request) {
   } catch (error) {
     console.error("Clients POST error:", error);
     return NextResponse.json(
-      { error: "Gagal menambah client" },
+      { error: "Gagal menambah client", detail: error?.message || String(error) },
       { status: 500 }
     );
   }
