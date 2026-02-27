@@ -1,7 +1,17 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/db";
+import { requireApiAuth } from "@/lib/require-auth";
+import { rateLimit } from "@/lib/rate-limit";
 
-export async function GET() {
+const limiter = rateLimit({ interval: 60_000, limit: 30 });
+
+export async function GET(request) {
+  const limited = limiter.check(request);
+  if (limited) return limited;
+
+  const authResult = await requireApiAuth();
+  if (authResult instanceof NextResponse) return authResult;
+
   try {
     const clients = await prisma.client.findMany({
       include: {
@@ -21,6 +31,12 @@ export async function GET() {
 }
 
 export async function POST(request) {
+  const limited = limiter.check(request);
+  if (limited) return limited;
+
+  const authResult = await requireApiAuth();
+  if (authResult instanceof NextResponse) return authResult;
+
   try {
     const body = await request.json();
     const { name, email, phone, company } = body;

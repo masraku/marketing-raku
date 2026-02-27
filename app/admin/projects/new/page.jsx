@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { ArrowLeft, Save, UserPlus } from "lucide-react";
 import Link from "next/link";
 import Sidebar from "@/components/admin/Sidebar";
+import AuthGuard from "@/components/admin/AuthGuard";
 
 const projectTypes = [
   { value: "landing_page", label: "Landing Page" },
@@ -130,236 +131,245 @@ export default function NewProjectPage() {
     "w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-gray-600 focus:outline-none focus:border-white/30 focus:ring-1 focus:ring-white/20 transition-all text-sm";
 
   return (
-    <div className="flex min-h-screen">
-      <Sidebar />
-      <main className="flex-1 p-8">
-        <div className="max-w-2xl mx-auto">
-          <Link
-            href="/admin/projects"
-            className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-6 text-sm"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Kembali
-          </Link>
+    <AuthGuard>
+      <div className="flex min-h-screen">
+        <Sidebar />
+        <main className="flex-1 p-8">
+          <div className="max-w-2xl mx-auto">
+            <Link
+              href="/admin/projects"
+              className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-6 text-sm"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Kembali
+            </Link>
 
-          <h1 className="text-2xl font-bold text-white mb-8">Project Baru</h1>
+            <h1 className="text-2xl font-bold text-white mb-8">Project Baru</h1>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Order ID */}
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Order ID
-              </label>
-              <input
-                type="text"
-                value={form.orderId}
-                onChange={(e) => setForm({ ...form, orderId: e.target.value })}
-                className={inputClass}
-                placeholder="RKU-2026-001"
-              />
-            </div>
-
-            {/* Project Name */}
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Nama Project
-              </label>
-              <input
-                type="text"
-                value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
-                className={inputClass}
-                placeholder="Website Toko ABC"
-              />
-            </div>
-
-            {/* Type */}
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Tipe Project
-              </label>
-              <select
-                value={form.type}
-                onChange={(e) => setForm({ ...form, type: e.target.value })}
-                className={inputClass}
-              >
-                {projectTypes.map((type) => (
-                  <option
-                    key={type.value}
-                    value={type.value}
-                    className="bg-zinc-900"
-                  >
-                    {type.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Description */}
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Deskripsi (opsional)
-              </label>
-              <textarea
-                value={form.description}
-                onChange={(e) =>
-                  setForm({ ...form, description: e.target.value })
-                }
-                className={`${inputClass} min-h-[100px] resize-none`}
-                placeholder="Deskripsi singkat tentang project..."
-              />
-            </div>
-
-            {/* Client */}
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <label className="block text-sm font-medium text-gray-300">
-                  Klien
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Order ID */}
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Order ID
                 </label>
-                <button
-                  type="button"
-                  onClick={() => setShowNewClient(!showNewClient)}
-                  className="text-xs text-gray-400 hover:text-white flex items-center gap-1 cursor-pointer"
-                >
-                  <UserPlus className="w-3 h-3" />
-                  Klien Baru
-                </button>
+                <input
+                  type="text"
+                  value={form.orderId}
+                  onChange={(e) =>
+                    setForm({ ...form, orderId: e.target.value })
+                  }
+                  className={inputClass}
+                  placeholder="RKU-2026-001"
+                />
               </div>
 
-              {showNewClient && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  className="glass-card rounded-xl p-4 mb-3 space-y-3"
+              {/* Project Name */}
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Nama Project
+                </label>
+                <input
+                  type="text"
+                  value={form.name}
+                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                  className={inputClass}
+                  placeholder="Website Toko ABC"
+                />
+              </div>
+
+              {/* Type */}
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Tipe Project
+                </label>
+                <select
+                  value={form.type}
+                  onChange={(e) => setForm({ ...form, type: e.target.value })}
+                  className={inputClass}
                 >
-                  <input
-                    type="text"
-                    value={clientForm.name}
-                    onChange={(e) =>
-                      setClientForm({ ...clientForm, name: e.target.value })
-                    }
-                    className={inputClass}
-                    placeholder="Nama klien"
-                  />
-                  <input
-                    type="text"
-                    value={clientForm.phone}
-                    onChange={(e) =>
-                      setClientForm({ ...clientForm, phone: e.target.value })
-                    }
-                    className={inputClass}
-                    placeholder="Nomor WhatsApp (62812...)"
-                  />
-                  <input
-                    type="email"
-                    value={clientForm.email}
-                    onChange={(e) =>
-                      setClientForm({ ...clientForm, email: e.target.value })
-                    }
-                    className={inputClass}
-                    placeholder="Email (opsional)"
-                  />
-                  <input
-                    type="text"
-                    value={clientForm.company}
-                    onChange={(e) =>
-                      setClientForm({ ...clientForm, company: e.target.value })
-                    }
-                    className={inputClass}
-                    placeholder="Perusahaan (opsional)"
-                  />
+                  {projectTypes.map((type) => (
+                    <option
+                      key={type.value}
+                      value={type.value}
+                      className="bg-zinc-900"
+                    >
+                      {type.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Description */}
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Deskripsi (opsional)
+                </label>
+                <textarea
+                  value={form.description}
+                  onChange={(e) =>
+                    setForm({ ...form, description: e.target.value })
+                  }
+                  className={`${inputClass} min-h-[100px] resize-none`}
+                  placeholder="Deskripsi singkat tentang project..."
+                />
+              </div>
+
+              {/* Client */}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="block text-sm font-medium text-gray-300">
+                    Klien
+                  </label>
                   <button
                     type="button"
-                    onClick={handleCreateClient}
-                    className="px-4 py-2 rounded-lg bg-white/10 text-white text-sm hover:bg-white/20 transition-all cursor-pointer"
+                    onClick={() => setShowNewClient(!showNewClient)}
+                    className="text-xs text-gray-400 hover:text-white flex items-center gap-1 cursor-pointer"
                   >
-                    Simpan Klien
+                    <UserPlus className="w-3 h-3" />
+                    Klien Baru
                   </button>
-                </motion.div>
-              )}
+                </div>
 
-              <select
-                value={form.clientId}
-                onChange={(e) => setForm({ ...form, clientId: e.target.value })}
-                className={inputClass}
-              >
-                <option value="" className="bg-zinc-900">
-                  Pilih Klien
-                </option>
-                {clients.map((client) => (
-                  <option
-                    key={client.id}
-                    value={client.id}
-                    className="bg-zinc-900"
+                {showNewClient && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    className="glass-card rounded-xl p-4 mb-3 space-y-3"
                   >
-                    {client.name} ({client.phone})
+                    <input
+                      type="text"
+                      value={clientForm.name}
+                      onChange={(e) =>
+                        setClientForm({ ...clientForm, name: e.target.value })
+                      }
+                      className={inputClass}
+                      placeholder="Nama klien"
+                    />
+                    <input
+                      type="text"
+                      value={clientForm.phone}
+                      onChange={(e) =>
+                        setClientForm({ ...clientForm, phone: e.target.value })
+                      }
+                      className={inputClass}
+                      placeholder="Nomor WhatsApp (62812...)"
+                    />
+                    <input
+                      type="email"
+                      value={clientForm.email}
+                      onChange={(e) =>
+                        setClientForm({ ...clientForm, email: e.target.value })
+                      }
+                      className={inputClass}
+                      placeholder="Email (opsional)"
+                    />
+                    <input
+                      type="text"
+                      value={clientForm.company}
+                      onChange={(e) =>
+                        setClientForm({
+                          ...clientForm,
+                          company: e.target.value,
+                        })
+                      }
+                      className={inputClass}
+                      placeholder="Perusahaan (opsional)"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleCreateClient}
+                      className="px-4 py-2 rounded-lg bg-white/10 text-white text-sm hover:bg-white/20 transition-all cursor-pointer"
+                    >
+                      Simpan Klien
+                    </button>
+                  </motion.div>
+                )}
+
+                <select
+                  value={form.clientId}
+                  onChange={(e) =>
+                    setForm({ ...form, clientId: e.target.value })
+                  }
+                  className={inputClass}
+                >
+                  <option value="" className="bg-zinc-900">
+                    Pilih Klien
                   </option>
-                ))}
-              </select>
-            </div>
+                  {clients.map((client) => (
+                    <option
+                      key={client.id}
+                      value={client.id}
+                      className="bg-zinc-900"
+                    >
+                      {client.name} ({client.phone})
+                    </option>
+                  ))}
+                </select>
+              </div>
 
-            {/* Cost */}
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Total Biaya (opsional)
-              </label>
-              <input
-                type="text"
-                value={form.totalCost}
-                onChange={(e) =>
-                  setForm({ ...form, totalCost: e.target.value })
-                }
-                className={inputClass}
-                placeholder="Rp4.000.000"
-              />
-            </div>
-
-            {/* Dates */}
-            <div className="grid grid-cols-2 gap-4">
+              {/* Cost */}
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Tanggal Mulai
+                  Total Biaya (opsional)
                 </label>
                 <input
-                  type="date"
-                  value={form.startDate}
+                  type="text"
+                  value={form.totalCost}
                   onChange={(e) =>
-                    setForm({ ...form, startDate: e.target.value })
+                    setForm({ ...form, totalCost: e.target.value })
                   }
                   className={inputClass}
+                  placeholder="Rp4.000.000"
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Estimasi Selesai
-                </label>
-                <input
-                  type="date"
-                  value={form.estimatedEnd}
-                  onChange={(e) =>
-                    setForm({ ...form, estimatedEnd: e.target.value })
-                  }
-                  className={inputClass}
-                />
+
+              {/* Dates */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Tanggal Mulai
+                  </label>
+                  <input
+                    type="date"
+                    value={form.startDate}
+                    onChange={(e) =>
+                      setForm({ ...form, startDate: e.target.value })
+                    }
+                    className={inputClass}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Estimasi Selesai
+                  </label>
+                  <input
+                    type="date"
+                    value={form.estimatedEnd}
+                    onChange={(e) =>
+                      setForm({ ...form, estimatedEnd: e.target.value })
+                    }
+                    className={inputClass}
+                  />
+                </div>
               </div>
-            </div>
 
-            {/* Error */}
-            {error && <p className="text-red-400 text-sm">{error}</p>}
+              {/* Error */}
+              {error && <p className="text-red-400 text-sm">{error}</p>}
 
-            {/* Submit */}
-            <motion.button
-              whileTap={{ scale: 0.95 }}
-              type="submit"
-              disabled={loading}
-              className="w-full px-6 py-3 rounded-full bg-white text-black font-bold text-sm hover:bg-gray-200 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
-            >
-              <Save className="w-4 h-4" />
-              {loading ? "Menyimpan..." : "Buat Project"}
-            </motion.button>
-          </form>
-        </div>
-      </main>
-    </div>
+              {/* Submit */}
+              <motion.button
+                whileTap={{ scale: 0.95 }}
+                type="submit"
+                disabled={loading}
+                className="w-full px-6 py-3 rounded-full bg-white text-black font-bold text-sm hover:bg-gray-200 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+              >
+                <Save className="w-4 h-4" />
+                {loading ? "Menyimpan..." : "Buat Project"}
+              </motion.button>
+            </form>
+          </div>
+        </main>
+      </div>
+    </AuthGuard>
   );
 }

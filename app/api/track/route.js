@@ -1,7 +1,13 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/db";
+import { rateLimit } from "@/lib/rate-limit";
+
+const limiter = rateLimit({ interval: 60_000, limit: 20 });
 
 export async function GET(request) {
+  const limited = limiter.check(request);
+  if (limited) return limited;
+
   const { searchParams } = new URL(request.url);
   const orderId = searchParams.get("orderId");
 

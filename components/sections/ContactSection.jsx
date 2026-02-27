@@ -27,7 +27,7 @@ export default function ContactSection() {
         <div className="grid md:grid-cols-2 gap-6 mb-12">
           {/* WhatsApp Card */}
           <motion.a
-            href="https://wa.me/6281234567890?text=Halo%20Rakuuu%2C%20saya%20tertarik%20untuk%20konsultasi%20pembuatan%20website"
+            href="https://wa.me/6282146150660?text=Halo%20Rakuuu%2C%20saya%20tertarik%20untuk%20konsultasi%20pembuatan%20website"
             target="_blank"
             rel="noopener noreferrer"
             whileHover={{ y: -5 }}
@@ -47,7 +47,7 @@ export default function ContactSection() {
 
           {/* Email Card */}
           <motion.a
-            href="mailto:hello@masraku.dev"
+            href="mailto:masraku@masraku.dev"
             whileHover={{ y: -5 }}
             className="glass-card rounded-2xl p-8 flex flex-col items-center gap-4 hover:border-purple-500/50 transition-colors duration-300 group"
           >
@@ -67,10 +67,10 @@ export default function ContactSection() {
         <p className="text-gray-500 text-sm">
           Atau langsung hubungi kami di{" "}
           <a
-            href="https://wa.me/6281234567890"
+            href="https://wa.me/6282146150660"
             className="text-white hover:underline"
           >
-            +62 812-3456-7890
+            +62 821-4615-0660
           </a>
         </p>
       </motion.div>

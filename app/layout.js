@@ -1,8 +1,8 @@
 import { Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'
-import Navbar from '@/components/Navbar'
-import Footer from '@/components/Footer'
-import AnimatedBackground from '@/components/AnimatedBackground'
+import Providers from '@/components/Providers'
+import PublicShell from '@/components/PublicShell'
+import { Analytics } from '@vercel/analytics/next'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -51,11 +51,13 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} text-white antialiased selection:bg-white/30 selection:text-white`}
       >
-        <AnimatedBackground />
-        <Navbar />
-        {children}
-        <Footer />
+        <Providers>
+          <PublicShell>{children}</PublicShell>
+        </Providers>
+        <Analytics />
       </body>
     </html>
   )
 }
+
+

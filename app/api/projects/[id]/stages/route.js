@@ -1,7 +1,17 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/db";
+import { requireApiAuth } from "@/lib/require-auth";
+import { rateLimit } from "@/lib/rate-limit";
+
+const limiter = rateLimit({ interval: 60_000, limit: 30 });
 
 export async function PUT(request, { params }) {
+  const limited = limiter.check(request);
+  if (limited) return limited;
+
+  const authResult = await requireApiAuth();
+  if (authResult instanceof NextResponse) return authResult;
+
   const { id } = await params;
 
   try {
