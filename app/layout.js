@@ -18,9 +18,8 @@ const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
 
 export const metadata = {
   metadataBase: new URL(baseUrl),
-  title: 'Jasa Buat Website by Rakuuu — Website Profesional untuk Bisnis Anda',
-  description:
-    'Jasa pembuatan website profesional untuk UMKM dan perusahaan. Landing page, company profile, web application, dan ekosistem digital. All-custom, modern, dan scalable.',
+  title: 'Jasa Bikin Website UMKM & Bisnis | Profesional & Terjangkau', description:
+    'Jasa bikin website untuk UMKM dan bisnis lokal. Desain profesional, mobile-friendly, cepat online, tanpa ribet. Konsultasi gratis sekarang.',
   keywords: [
     'Jasa Buat Website',
     'Jasa Pembuatan Website',

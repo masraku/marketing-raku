@@ -1,7 +1,7 @@
 import ServicesSection from "@/components/sections/ServicesSection";
 
 export const metadata = {
-  title: "Layanan — Jasa Buat Website by Rakuuu",
+  title: "Layanan jasa bikin website by Rakuuu",
   description:
     "Layanan pembuatan website profesional: Landing Page, Company Profile, Web Application, E-Commerce, dan Ekosistem Digital.",
   keywords: [
