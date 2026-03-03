@@ -7,6 +7,7 @@ import { ArrowLeft, Save, UserPlus } from "lucide-react";
 import Link from "next/link";
 import Sidebar from "@/components/admin/Sidebar";
 import AuthGuard from "@/components/admin/AuthGuard";
+import { formatRupiah, parseRupiah } from "@/lib/format";
 
 const projectTypes = [
   { value: "landing_page", label: "Landing Page" },
@@ -314,9 +315,9 @@ export default function NewProjectPage() {
                 </label>
                 <input
                   type="text"
-                  value={form.totalCost}
+                  value={form.totalCost ? formatRupiah(form.totalCost) : ""}
                   onChange={(e) =>
-                    setForm({ ...form, totalCost: e.target.value })
+                    setForm({ ...form, totalCost: parseRupiah(e.target.value) })
                   }
                   className={inputClass}
                   placeholder="Rp4.000.000"
