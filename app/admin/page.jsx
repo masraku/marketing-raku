@@ -8,6 +8,10 @@ import {
   CheckCircle2,
   Clock,
   TrendingUp,
+  Eye,
+  UserCheck,
+  BarChart3,
+  Globe,
 } from "lucide-react";
 import Link from "next/link";
 import Sidebar from "@/components/admin/Sidebar";
@@ -21,7 +25,9 @@ export default function AdminDashboard() {
     totalClients: 0,
   });
   const [recentProjects, setRecentProjects] = useState([]);
+  const [traffic, setTraffic] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [trafficLoading, setTrafficLoading] = useState(true);
 
   useEffect(() => {
     async function fetchData() {
@@ -53,7 +59,22 @@ export default function AdminDashboard() {
       }
     }
 
+    async function fetchTraffic() {
+      try {
+        const res = await fetch("/api/admin/traffic");
+        if (res.ok) {
+          const data = await res.json();
+          setTraffic(data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch traffic:", error);
+      } finally {
+        setTrafficLoading(false);
+      }
+    }
+
     fetchData();
+    fetchTraffic();
   }, []);
 
   const statCards = [
@@ -86,6 +107,11 @@ export default function AdminDashboard() {
       bg: "bg-purple-500/10",
     },
   ];
+
+  // Hitung max views untuk chart scaling
+  const maxViews = traffic?.dailyViews
+    ? Math.max(...traffic.dailyViews.map((d) => d.views), 1)
+    : 1;
 
   return (
     <AuthGuard>
@@ -122,6 +148,179 @@ export default function AdminDashboard() {
                 );
               })}
             </div>
+
+            {/* Traffic Section */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="mb-8"
+            >
+              <div className="flex items-center gap-2 mb-4">
+                <BarChart3 className="w-5 h-5 text-cyan-400" />
+                <h2 className="text-lg font-bold text-white">
+                  Traffic Pengunjung
+                </h2>
+              </div>
+
+              {/* Traffic Stats */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div className="glass-card rounded-xl p-5">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-9 h-9 rounded-lg bg-cyan-500/10 flex items-center justify-center">
+                      <Eye className="w-4 h-4 text-cyan-400" />
+                    </div>
+                    <span className="text-gray-400 text-sm">
+                      Views Hari Ini
+                    </span>
+                  </div>
+                  <p className="text-2xl font-bold text-white">
+                    {trafficLoading
+                      ? "—"
+                      : (traffic?.todayViews || 0).toLocaleString("id-ID")}
+                  </p>
+                </div>
+
+                <div className="glass-card rounded-xl p-5">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-9 h-9 rounded-lg bg-emerald-500/10 flex items-center justify-center">
+                      <UserCheck className="w-4 h-4 text-emerald-400" />
+                    </div>
+                    <span className="text-gray-400 text-sm">
+                      Visitor Unik Hari Ini
+                    </span>
+                  </div>
+                  <p className="text-2xl font-bold text-white">
+                    {trafficLoading
+                      ? "—"
+                      : (traffic?.todayUnique || 0).toLocaleString("id-ID")}
+                  </p>
+                </div>
+
+                <div className="glass-card rounded-xl p-5">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-9 h-9 rounded-lg bg-violet-500/10 flex items-center justify-center">
+                      <Globe className="w-4 h-4 text-violet-400" />
+                    </div>
+                    <span className="text-gray-400 text-sm">Total Views</span>
+                  </div>
+                  <p className="text-2xl font-bold text-white">
+                    {trafficLoading
+                      ? "—"
+                      : (traffic?.totalViews || 0).toLocaleString("id-ID")}
+                  </p>
+                </div>
+              </div>
+
+              {/* Chart & Top Pages */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                {/* Bar Chart — 7 Hari Terakhir */}
+                <div className="lg:col-span-2 glass-card rounded-xl p-6">
+                  <h3 className="text-sm font-semibold text-gray-400 mb-4">
+                    Views 7 Hari Terakhir
+                  </h3>
+                  {trafficLoading ? (
+                    <div className="flex items-end gap-2 h-40 justify-center">
+                      <p className="text-gray-600 text-sm">Loading...</p>
+                    </div>
+                  ) : (
+                    <div className="flex items-end gap-2 h-40">
+                      {(traffic?.dailyViews || []).map((day, i) => {
+                        const height =
+                          maxViews > 0
+                            ? Math.max((day.views / maxViews) * 100, 4)
+                            : 4;
+                        const isToday =
+                          i === (traffic?.dailyViews?.length || 0) - 1;
+
+                        return (
+                          <div
+                            key={day.date}
+                            className="flex-1 flex flex-col items-center gap-1"
+                          >
+                            <span className="text-xs text-gray-500 font-mono">
+                              {day.views}
+                            </span>
+                            <motion.div
+                              initial={{ height: 0 }}
+                              animate={{ height: `${height}%` }}
+                              transition={{
+                                delay: 0.5 + i * 0.08,
+                                duration: 0.5,
+                                ease: "easeOut",
+                              }}
+                              className={`w-full rounded-t-md ${
+                                isToday
+                                  ? "bg-gradient-to-t from-cyan-500 to-cyan-400"
+                                  : "bg-gradient-to-t from-white/10 to-white/20"
+                              }`}
+                              style={{ minHeight: "4px" }}
+                            />
+                            <span
+                              className={`text-[10px] mt-1 ${
+                                isToday
+                                  ? "text-cyan-400 font-semibold"
+                                  : "text-gray-600"
+                              }`}
+                            >
+                              {day.label}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+
+                {/* Top Pages */}
+                <div className="glass-card rounded-xl p-6">
+                  <h3 className="text-sm font-semibold text-gray-400 mb-4">
+                    Top Halaman
+                  </h3>
+                  {trafficLoading ? (
+                    <p className="text-gray-600 text-sm">Loading...</p>
+                  ) : (traffic?.topPages || []).length === 0 ? (
+                    <p className="text-gray-600 text-sm text-center py-4">
+                      Belum ada data
+                    </p>
+                  ) : (
+                    <div className="space-y-3">
+                      {(traffic?.topPages || []).map((page, i) => {
+                        const topViews = traffic.topPages[0]?.views || 1;
+                        const width = Math.max(
+                          (page.views / topViews) * 100,
+                          8,
+                        );
+
+                        return (
+                          <div key={page.path}>
+                            <div className="flex items-center justify-between mb-1">
+                              <span className="text-xs text-gray-300 truncate max-w-[160px]">
+                                {page.path === "/" ? "Home" : page.path}
+                              </span>
+                              <span className="text-xs text-gray-500 font-mono ml-2">
+                                {page.views}
+                              </span>
+                            </div>
+                            <div className="w-full h-1.5 rounded-full bg-white/5 overflow-hidden">
+                              <motion.div
+                                initial={{ width: 0 }}
+                                animate={{ width: `${width}%` }}
+                                transition={{
+                                  delay: 0.6 + i * 0.1,
+                                  duration: 0.5,
+                                }}
+                                className="h-full rounded-full bg-gradient-to-r from-cyan-500/60 to-cyan-400"
+                              />
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </motion.div>
 
             {/* Recent Projects */}
             <div className="glass-card rounded-xl p-6">
