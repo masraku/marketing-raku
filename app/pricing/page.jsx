@@ -1,26 +1,27 @@
 import PricingSection from "@/components/sections/PricingSection";
 
 export const metadata = {
-  title: "Paket Harga — Jasa Buat Website by Rakuuu",
+  title: "Harga Jasa Pembuatan Website | Mulai Dari Rp2 Juta",
   description:
-    "Paket layanan pembuatan website untuk UMKM. Mulai dari Rp2 juta. Termasuk hosting, domain, dan maintenance.",
+    "Paket harga pembuatan website profesional untuk UMKM & Perusahaan. Mulai dari Rp2 juta, sudah termasuk hosting, domain, SSL, dan maintenance bulanan.",
   keywords: [
-    "harga jasa buat website",
-    "paket website murah",
-    "harga landing page",
+    "harga jasa pembuatan website",
     "biaya buat website",
-    "jasa website UMKM",
+    "harga bikin website company profile",
+    "paket website murah",
+    "jasa web murah berkualitas",
+    "harga jasa web developer",
   ],
   openGraph: {
-    title: "Paket Harga — Jasa Buat Website by Rakuuu",
+    title: "Harga Jasa Pembuatan Website | Mulai Dari Rp2 Juta",
     description:
-      "Mulai dari Rp2 juta. Termasuk hosting, domain, dan maintenance.",
+      "Mulai dari Rp2 juta. Termasuk hosting, domain, SSL, dan maintenance.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Paket Harga — Jasa Buat Website by Rakuuu",
+    title: "Harga Jasa Pembuatan Website | Mulai Dari Rp2 Juta",
     description:
-      "Mulai dari Rp2 juta. Termasuk hosting, domain, dan maintenance.",
+      "Mulai dari Rp2 juta. Termasuk hosting, domain, SSL, dan maintenance.",
   },
 };
 

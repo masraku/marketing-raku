@@ -17,7 +17,7 @@ export default function ContactSection() {
         className="text-center"
       >
         <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-gray-100 via-gray-400 to-gray-600">
-          Siap Mulai Project?
+          Siap Mulai Project Pembuatan Website?
         </h2>
         <p className="text-gray-400 text-lg max-w-2xl mx-auto mb-12">
           Konsultasi gratis! Ceritakan kebutuhan bisnis Anda dan kami akan bantu

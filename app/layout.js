@@ -2,6 +2,7 @@ import { Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'
 import Providers from '@/components/Providers'
 import PublicShell from '@/components/PublicShell'
+import StructuredData from '@/components/StructuredData'
 import { Analytics } from '@vercel/analytics/next'
 
 const geistSans = Geist({
@@ -18,29 +19,33 @@ const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
 
 export const metadata = {
   metadataBase: new URL(baseUrl),
-  title: 'Jasa Bikin Website UMKM & Bisnis | Profesional & Terjangkau', description:
-    'Jasa bikin website untuk UMKM dan bisnis lokal. Desain profesional, mobile-friendly, cepat online, tanpa ribet. Konsultasi gratis sekarang.',
+  title: 'Jasa Pembuatan Website Profesional & Terpercaya | Rakuuu', 
+  description:
+    'Jasa pembuatan website profesional untuk UMKM dan Perusahaan. Bikin web company profile, toko online, web custom dengan SEO gratis. Proses cepat & terjangkau.',
   keywords: [
-    'Jasa Buat Website',
     'Jasa Pembuatan Website',
-    'Web Developer Indonesia',
-    'Landing Page UMKM',
-    'Company Profile',
-    'Web Application',
+    'Jasa Buat Website',
+    'Bikin Website Murah',
+    'Jasa Web Developer Indonesia',
+    'Jasa Pembuatan Web Company Profile',
+    'Jasa Pembuatan Toko Online',
+    'Jasa Buat Website UMKM',
+    'Jasa Web Design Jakarta',
+    'Jasa Pembuatan Website Profesional',
     'Rakuuu',
   ],
   authors: [{ name: 'Rakuuu' }],
   openGraph: {
-    title: 'Jasa Buat Website by Rakuuu',
-    description: 'Website profesional untuk segala kebutuhan bisnis Anda.',
+    title: 'Jasa Pembuatan Website Profesional & Terpercaya | Rakuuu',
+    description: 'Bikin website cepat, modern, dan SEO-friendly untuk bisnis Anda.',
     type: 'website',
     locale: 'id_ID',
     url: baseUrl,
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Jasa Buat Website by Rakuuu',
-    description: 'Website profesional untuk segala kebutuhan bisnis Anda.',
+    title: 'Jasa Pembuatan Website Profesional & Terpercaya | Rakuuu',
+    description: 'Bikin website cepat, modern, dan SEO-friendly untuk bisnis Anda.',
   },
 }
 
@@ -50,6 +55,7 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} text-white antialiased selection:bg-white/30 selection:text-white`}
       >
+        <StructuredData />
         <Providers>
           <PublicShell>{children}</PublicShell>
         </Providers>
@@ -58,5 +64,4 @@ export default function RootLayout({ children }) {
     </html>
   )
 }
-
 

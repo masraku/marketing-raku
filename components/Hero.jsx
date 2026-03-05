@@ -164,18 +164,20 @@ export default function Hero() {
             </span>
           </motion.div>
 
-          <h1 className="text-5xl md:text-7xl font-bold font-sans tracking-tight mb-6 leading-tight">
-            Kami Bangun{" "}
+          <h1 className="text-5xl md:text-7xl font-bold font-sans tracking-tight mb-2 leading-tight">
+            Jasa Pembuatan{" "}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-100 via-gray-400 to-gray-600">
               Website
-            </span>{" "}
-            <br />
-            Impian Anda
+            </span>
           </h1>
+          <h2 className="text-2xl md:text-3xl font-medium text-gray-300 tracking-tight mb-6">
+            Profesional & Terpercaya
+          </h2>
 
           <p className="text-gray-400 text-lg md:text-xl leading-relaxed max-w-lg mb-10 mx-auto lg:mx-0">
-            All-custom website untuk segala kebutuhan — dari landing page UMKM
-            hingga ekosistem digital perusahaan.
+            Kami bangun website impian Anda. All-custom website untuk segala
+            kebutuhan — dari landing page UMKM hingga ekosistem digital
+            perusahaan.
           </p>
 
           <div className="flex flex-wrap gap-4 justify-center lg:justify-start">

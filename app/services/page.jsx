@@ -1,27 +1,27 @@
 import ServicesSection from "@/components/sections/ServicesSection";
 
 export const metadata = {
-  title: "Layanan jasa bikin website by Rakuuu",
+  title: "Layanan Jasa Pembuatan Website by Rakuuu",
   description:
-    "Layanan pembuatan website profesional: Landing Page, Company Profile, Web Application, E-Commerce, dan Ekosistem Digital.",
+    "Layanan jasa pembuatan website profesional: Bikin web Landing Page, Company Profile, Web Application Custom, dan Web E-Commerce Toko Online.",
   keywords: [
-    "jasa buat website",
-    "landing page UMKM",
-    "company profile",
-    "web application",
-    "e-commerce",
-    "web developer Indonesia",
+    "layanan pembuatan website",
+    "jasa bikin web landing page",
+    "jasa pembuatan company profile",
+    "jasa web application custom",
+    "jasa bikin website toko online e-commerce",
+    "jasa web developer profesional",
   ],
   openGraph: {
-    title: "Layanan — Jasa Buat Website by Rakuuu",
+    title: "Layanan Jasa Pembuatan Website by Rakuuu",
     description:
-      "Landing Page, Company Profile, Web App, E-Commerce — semua custom dan profesional.",
+      "Bikin Landing Page, Company Profile, Web App custom impian Anda bersama Rakuuu.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Layanan — Jasa Buat Website by Rakuuu",
+    title: "Layanan Jasa Pembuatan Website by Rakuuu",
     description:
-      "Landing Page, Company Profile, Web App, E-Commerce — semua custom dan profesional.",
+      "Bikin Landing Page, Company Profile, Web App custom impian Anda bersama Rakuuu.",
   },
 };
 
