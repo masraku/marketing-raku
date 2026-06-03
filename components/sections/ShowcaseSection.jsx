@@ -6,7 +6,7 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { ExternalLink } from "lucide-react";
 
-const showcaseProjects = [
+export const projects = [
   {
     title: "Disnaker Kerjasimpel",
     type: "Web Application",
@@ -43,6 +43,26 @@ const showcaseProjects = [
     image: "/assets/images/rakugo.jpg",
     url: "https://rakugo.studio/",
   },
+  {
+    title: "NotaKu",
+    type: "PWA",
+    description:
+      "A static MVP web app for Indonesian MSMEs that helps calculate selling prices, profit margins, invoices, promo captions, promotional posters, product catalogs, and WhatsApp-based Pro package offers.",
+    tags: ["HTML", "CSS", "JavaScript", "PWA"],
+    image: "/assets/images/notaku.png",
+    url: "https://cuanotaku.vercel.app/",
+    githubUrl: "https://github.com/masraku/bismillahcuan",
+  },
+  {
+    title: "staff-management",
+    type: "Web Application",
+    description:
+      "A team work schedule management app for creating spreadsheet-style shift schedules, managing team members, applying automatic day-off rules, saving sessions in localStorage, and exporting colored schedules to Excel.",
+    tags: ["Next.js", "JavaScript", "localStorage", "xlsx-js-style"],
+    image: "/assets/images/staff-management.png",
+    url: "https://management-staff.vercel.app/",
+    githubUrl: "https://github.com/masraku/management-staff",
+  },
 ];
 
 export default function ShowcaseSection() {
@@ -68,7 +88,7 @@ export default function ShowcaseSection() {
       </motion.div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {showcaseProjects.map((project, index) => (
+        {projects.map((project, index) => (
           <motion.div
             key={project.title}
             initial={{ opacity: 0, y: 30 }}
