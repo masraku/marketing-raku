@@ -31,28 +31,45 @@ const stageOpts = [
   { value: "completed", label: "Completed" },
 ];
 
+async function fetchProject(id) {
+  const response = await fetch(`/api/projects/${id}`);
+  const data = await response.json();
+
+  return { ok: response.ok, data };
+}
+
 export default function ProjectDetailPage() {
   const params = useParams();
   const router = useRouter();
   const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [infoSaving, setInfoSaving] = useState(false);
+  const [infoError, setInfoError] = useState("");
   const [msg, setMsg] = useState("");
   const [msgType, setMsgType] = useState("update");
 
   useEffect(() => {
-    load();
+    async function loadInitialProject() {
+      try {
+        const { ok, data } = await fetchProject(params.id);
+        if (ok) setProject(data);
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadInitialProject();
   }, [params.id]);
 
   async function load() {
     try {
-      const r = await fetch(`/api/projects/${params.id}`);
-      const d = await r.json();
-      if (r.ok) setProject(d);
+      const { ok, data } = await fetchProject(params.id);
+      if (ok) setProject(data);
     } catch (e) {
       console.error(e);
-    } finally {
-      setLoading(false);
     }
   }
 
@@ -71,6 +88,64 @@ export default function ProjectDetailPage() {
       console.error(e);
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function saveInfo() {
+    const projectName = project.name.trim();
+    const clientName = project.client?.name?.trim() || "";
+
+    if (!projectName || !clientName) {
+      setInfoError("Nama project dan nama klien wajib diisi");
+      return;
+    }
+
+    setInfoSaving(true);
+    setInfoError("");
+
+    try {
+      const projectRes = await fetch(`/api/projects/${params.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: projectName }),
+      });
+      const updatedProject = await projectRes.json();
+
+      if (!projectRes.ok) {
+        setInfoError(updatedProject.error || "Gagal mengupdate project");
+        return;
+      }
+
+      let updatedClient = updatedProject.client;
+
+      if (project.client?.id) {
+        const clientRes = await fetch(`/api/clients/${project.client.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: clientName,
+            phone: project.client.phone,
+            email: project.client.email || "",
+            company: project.client.company || "",
+          }),
+        });
+        const clientData = await clientRes.json();
+
+        if (!clientRes.ok) {
+          setProject(updatedProject);
+          setInfoError(clientData.error || "Gagal mengupdate nama klien");
+          return;
+        }
+
+        updatedClient = { ...updatedProject.client, ...clientData };
+      }
+
+      setProject({ ...updatedProject, client: updatedClient });
+    } catch (e) {
+      console.error(e);
+      setInfoError("Gagal menyimpan informasi project");
+    } finally {
+      setInfoSaving(false);
     }
   }
 
@@ -182,16 +257,63 @@ export default function ProjectDetailPage() {
             </div>
 
             <div className="glass-card rounded-xl p-6 mb-6">
-              <div className="flex items-center gap-3 mb-2">
-                <span className="font-mono text-xs text-gray-500 px-2 py-1 rounded-lg bg-white/5">
-                  {project.orderId}
-                </span>
-                <h1 className="text-xl font-bold text-white">{project.name}</h1>
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between mb-4">
+                <div>
+                  <span className="font-mono text-xs text-gray-500 px-2 py-1 rounded-lg bg-white/5 inline-block mb-3">
+                    {project.orderId}
+                  </span>
+                  <h1 className="text-xl font-bold text-white">
+                    Informasi Project
+                  </h1>
+                  <p className="text-sm text-gray-400 mt-1">
+                    {project.type.replace(/_/g, " ")}
+                  </p>
+                </div>
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
+                  onClick={saveInfo}
+                  disabled={infoSaving}
+                  className="px-4 py-2 rounded-lg bg-white text-black text-sm font-bold hover:bg-gray-200 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                >
+                  <Save className="w-4 h-4" />
+                  {infoSaving ? "Menyimpan..." : "Simpan Info"}
+                </motion.button>
               </div>
-              <p className="text-sm text-gray-400">
-                Klien: {project.client?.name || "—"} ·{" "}
-                {project.type.replace(/_/g, " ")}
-              </p>
+
+              <div className="grid sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-medium text-gray-400 mb-2">
+                    Nama Project
+                  </label>
+                  <input
+                    value={project.name}
+                    onChange={(e) =>
+                      setProject({ ...project, name: e.target.value })
+                    }
+                    className={ic}
+                    placeholder="Nama project"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-400 mb-2">
+                    Nama Klien
+                  </label>
+                  <input
+                    value={project.client?.name || ""}
+                    onChange={(e) =>
+                      setProject({
+                        ...project,
+                        client: { ...project.client, name: e.target.value },
+                      })
+                    }
+                    className={ic}
+                    placeholder="Nama klien"
+                  />
+                </div>
+              </div>
+              {infoError && (
+                <p className="text-red-400 text-sm mt-3">{infoError}</p>
+              )}
             </div>
 
             <div className="grid md:grid-cols-2 gap-6">
