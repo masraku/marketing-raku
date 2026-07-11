@@ -16,6 +16,7 @@ import Link from "next/link";
 import Sidebar from "@/components/admin/Sidebar";
 import AuthGuard from "@/components/admin/AuthGuard";
 import ProgressBar from "@/components/tracking/ProgressBar";
+import { formatRupiah, parseRupiah } from "@/lib/format";
 
 const statusOpts = [
   { value: "consultation", label: "Konsultasi" },
@@ -31,11 +32,25 @@ const stageOpts = [
   { value: "completed", label: "Completed" },
 ];
 
+const projectTypes = [
+  { value: "landing_page", label: "Landing Page" },
+  { value: "company_profile", label: "Company Profile" },
+  { value: "web_app", label: "Web Application" },
+  { value: "ecommerce", label: "E-Commerce" },
+  { value: "digital_ecosystem", label: "Ekosistem Digital" },
+  { value: "redesign", label: "Redesign & Optimasi" },
+];
+
 async function fetchProject(id) {
   const response = await fetch(`/api/projects/${id}`);
   const data = await response.json();
 
   return { ok: response.ok, data };
+}
+
+function toDateInputValue(dateString) {
+  if (!dateString) return "";
+  return new Date(dateString).toISOString().slice(0, 10);
 }
 
 export default function ProjectDetailPage() {
@@ -92,11 +107,22 @@ export default function ProjectDetailPage() {
   }
 
   async function saveInfo() {
+    const orderId = project.orderId.trim();
     const projectName = project.name.trim();
+    const projectType = project.type.trim();
     const clientName = project.client?.name?.trim() || "";
+    const clientPhone = project.client?.phone?.trim() || "";
 
-    if (!projectName || !clientName) {
-      setInfoError("Nama project dan nama klien wajib diisi");
+    if (
+      !orderId ||
+      !projectName ||
+      !projectType ||
+      !clientName ||
+      !clientPhone
+    ) {
+      setInfoError(
+        "Order ID, nama project, tipe project, nama klien, dan nomor HP wajib diisi",
+      );
       return;
     }
 
@@ -107,7 +133,16 @@ export default function ProjectDetailPage() {
       const projectRes = await fetch(`/api/projects/${params.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: projectName }),
+        body: JSON.stringify({
+          orderId,
+          name: projectName,
+          type: projectType,
+          description: project.description || "",
+          totalCost: project.totalCost || "",
+          paidAmount: project.paidAmount || "",
+          startDate: toDateInputValue(project.startDate),
+          estimatedEnd: toDateInputValue(project.estimatedEnd),
+        }),
       });
       const updatedProject = await projectRes.json();
 
@@ -124,7 +159,7 @@ export default function ProjectDetailPage() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             name: clientName,
-            phone: project.client.phone,
+            phone: clientPhone,
             email: project.client.email || "",
             company: project.client.company || "",
           }),
@@ -263,7 +298,7 @@ export default function ProjectDetailPage() {
                     {project.orderId}
                   </span>
                   <h1 className="text-xl font-bold text-white">
-                    Informasi Project
+                    Informasi Pesanan
                   </h1>
                   <p className="text-sm text-gray-400 mt-1">
                     {project.type.replace(/_/g, " ")}
@@ -276,11 +311,46 @@ export default function ProjectDetailPage() {
                   className="px-4 py-2 rounded-lg bg-white text-black text-sm font-bold hover:bg-gray-200 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                 >
                   <Save className="w-4 h-4" />
-                  {infoSaving ? "Menyimpan..." : "Simpan Info"}
+                  {infoSaving ? "Menyimpan..." : "Simpan Pesanan"}
                 </motion.button>
               </div>
 
               <div className="grid sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-medium text-gray-400 mb-2">
+                    Order ID
+                  </label>
+                  <input
+                    value={project.orderId}
+                    onChange={(e) =>
+                      setProject({ ...project, orderId: e.target.value })
+                    }
+                    className={ic}
+                    placeholder="RKU-2026-001"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-400 mb-2">
+                    Tipe Project
+                  </label>
+                  <select
+                    value={project.type}
+                    onChange={(e) =>
+                      setProject({ ...project, type: e.target.value })
+                    }
+                    className={ic}
+                  >
+                    {projectTypes.map((type) => (
+                      <option
+                        key={type.value}
+                        value={type.value}
+                        className="bg-zinc-900"
+                      >
+                        {type.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
                 <div>
                   <label className="block text-xs font-medium text-gray-400 mb-2">
                     Nama Project
@@ -308,6 +378,133 @@ export default function ProjectDetailPage() {
                     }
                     className={ic}
                     placeholder="Nama klien"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-400 mb-2">
+                    Nomor HP Klien
+                  </label>
+                  <input
+                    value={project.client?.phone || ""}
+                    onChange={(e) =>
+                      setProject({
+                        ...project,
+                        client: { ...project.client, phone: e.target.value },
+                      })
+                    }
+                    className={ic}
+                    placeholder="62812..."
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-400 mb-2">
+                    Email Klien
+                  </label>
+                  <input
+                    type="email"
+                    value={project.client?.email || ""}
+                    onChange={(e) =>
+                      setProject({
+                        ...project,
+                        client: { ...project.client, email: e.target.value },
+                      })
+                    }
+                    className={ic}
+                    placeholder="email@domain.com"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-400 mb-2">
+                    Perusahaan
+                  </label>
+                  <input
+                    value={project.client?.company || ""}
+                    onChange={(e) =>
+                      setProject({
+                        ...project,
+                        client: {
+                          ...project.client,
+                          company: e.target.value,
+                        },
+                      })
+                    }
+                    className={ic}
+                    placeholder="Nama perusahaan"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-400 mb-2">
+                    Total Harga
+                  </label>
+                  <input
+                    value={
+                      project.totalCost ? formatRupiah(project.totalCost) : ""
+                    }
+                    onChange={(e) =>
+                      setProject({
+                        ...project,
+                        totalCost: parseRupiah(e.target.value),
+                      })
+                    }
+                    className={ic}
+                    placeholder="Rp4.000.000"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-400 mb-2">
+                    Sudah Dibayar
+                  </label>
+                  <input
+                    value={
+                      project.paidAmount ? formatRupiah(project.paidAmount) : ""
+                    }
+                    onChange={(e) =>
+                      setProject({
+                        ...project,
+                        paidAmount: parseRupiah(e.target.value),
+                      })
+                    }
+                    className={ic}
+                    placeholder="Rp2.000.000"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-400 mb-2">
+                    Tanggal Mulai
+                  </label>
+                  <input
+                    type="date"
+                    value={toDateInputValue(project.startDate)}
+                    onChange={(e) =>
+                      setProject({ ...project, startDate: e.target.value })
+                    }
+                    className={ic}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-400 mb-2">
+                    Estimasi Selesai
+                  </label>
+                  <input
+                    type="date"
+                    value={toDateInputValue(project.estimatedEnd)}
+                    onChange={(e) =>
+                      setProject({ ...project, estimatedEnd: e.target.value })
+                    }
+                    className={ic}
+                  />
+                </div>
+                <div className="sm:col-span-2">
+                  <label className="block text-xs font-medium text-gray-400 mb-2">
+                    Deskripsi
+                  </label>
+                  <textarea
+                    value={project.description || ""}
+                    onChange={(e) =>
+                      setProject({ ...project, description: e.target.value })
+                    }
+                    className={`${ic} min-h-[96px] resize-none`}
+                    placeholder="Deskripsi singkat tentang project..."
                   />
                 </div>
               </div>

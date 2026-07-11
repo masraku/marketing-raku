@@ -52,21 +52,76 @@ export async function PUT(request, { params }) {
 
   try {
     const body = await request.json();
-    const { name, type, description, status, progress, totalCost, paidAmount, startDate, estimatedEnd } = body;
+    const {
+      orderId,
+      name,
+      type,
+      description,
+      status,
+      progress,
+      totalCost,
+      paidAmount,
+      startDate,
+      estimatedEnd,
+    } = body;
+
+    if (orderId !== undefined && !String(orderId).trim()) {
+      return NextResponse.json(
+        { error: "Order ID wajib diisi" },
+        { status: 400 }
+      );
+    }
+
+    if (name !== undefined && !String(name).trim()) {
+      return NextResponse.json(
+        { error: "Nama project wajib diisi" },
+        { status: 400 }
+      );
+    }
+
+    if (type !== undefined && !String(type).trim()) {
+      return NextResponse.json(
+        { error: "Tipe project wajib diisi" },
+        { status: 400 }
+      );
+    }
+
+    const data = {
+      ...(orderId !== undefined && { orderId: String(orderId).trim() }),
+      ...(name !== undefined && { name: String(name).trim() }),
+      ...(type !== undefined && { type: String(type).trim() }),
+      ...(description !== undefined && { description }),
+      ...(status && { status }),
+      ...(totalCost !== undefined && {
+        totalCost: String(totalCost).replace(/\D/g, ""),
+      }),
+      ...(paidAmount !== undefined && {
+        paidAmount: String(paidAmount).replace(/\D/g, ""),
+      }),
+      ...(startDate !== undefined && {
+        startDate: startDate ? new Date(startDate) : null,
+      }),
+      ...(estimatedEnd !== undefined && {
+        estimatedEnd: estimatedEnd ? new Date(estimatedEnd) : null,
+      }),
+    };
+
+    if (progress !== undefined) {
+      const parsedProgress = parseInt(progress);
+
+      if (Number.isNaN(parsedProgress)) {
+        return NextResponse.json(
+          { error: "Progress harus berupa angka" },
+          { status: 400 }
+        );
+      }
+
+      data.progress = Math.min(100, Math.max(0, parsedProgress));
+    }
 
     const project = await prisma.project.update({
       where: { id },
-      data: {
-        ...(name && { name }),
-        ...(type && { type }),
-        ...(description !== undefined && { description }),
-        ...(status && { status }),
-        ...(progress !== undefined && { progress: parseInt(progress) }),
-        ...(totalCost !== undefined && { totalCost }),
-        ...(paidAmount !== undefined && { paidAmount }),
-        ...(startDate !== undefined && { startDate: startDate ? new Date(startDate) : null }),
-        ...(estimatedEnd !== undefined && { estimatedEnd: estimatedEnd ? new Date(estimatedEnd) : null }),
-      },
+      data,
       include: {
         client: true,
         stages: { orderBy: { order: "asc" } },
@@ -77,6 +132,14 @@ export async function PUT(request, { params }) {
     return NextResponse.json(project);
   } catch (error) {
     console.error("Project PUT error:", error);
+
+    if (error.code === "P2002") {
+      return NextResponse.json(
+        { error: "Order ID sudah digunakan" },
+        { status: 409 }
+      );
+    }
+
     return NextResponse.json(
       { error: "Gagal mengupdate project" },
       { status: 500 }
