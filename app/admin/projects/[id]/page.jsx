@@ -103,7 +103,7 @@ export default function ProjectDetailPage() {
   async function saveStatus() {
     setSaving(true);
     try {
-      await fetch(`/api/projects/${params.id}`, {
+      const r = await fetch(`/api/projects/${params.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -111,6 +111,8 @@ export default function ProjectDetailPage() {
           progress: project.progress,
         }),
       });
+      const data = await readApiResponse(r);
+      if (r.ok) setProject((p) => ({ ...p, ...data }));
     } catch (e) {
       console.error(e);
     } finally {
@@ -546,6 +548,24 @@ export default function ProjectDetailPage() {
                       ))}
                     </select>
                     <ProgressBar progress={project.progress} />
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="range"
+                        min="0"
+                        max="100"
+                        value={project.progress}
+                        onChange={(e) =>
+                          setProject({
+                            ...project,
+                            progress: parseInt(e.target.value),
+                          })
+                        }
+                        className="flex-1 accent-white"
+                      />
+                      <span className="text-sm text-gray-400 font-mono w-10 text-right">
+                        {project.progress}%
+                      </span>
+                    </div>
                     <motion.button
                       whileTap={{ scale: 0.95 }}
                       onClick={saveStatus}
