@@ -108,7 +108,6 @@ export default function ProjectDetailPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           status: project.status,
-          progress: project.progress,
         }),
       });
       const data = await readApiResponse(r);
@@ -548,24 +547,6 @@ export default function ProjectDetailPage() {
                       ))}
                     </select>
                     <ProgressBar progress={project.progress} />
-                    <div className="flex items-center gap-3">
-                      <input
-                        type="range"
-                        min="0"
-                        max="100"
-                        value={project.progress}
-                        onChange={(e) =>
-                          setProject({
-                            ...project,
-                            progress: parseInt(e.target.value),
-                          })
-                        }
-                        className="flex-1 accent-white"
-                      />
-                      <span className="text-sm text-gray-400 font-mono w-10 text-right">
-                        {project.progress}%
-                      </span>
-                    </div>
                     <motion.button
                       whileTap={{ scale: 0.95 }}
                       onClick={saveStatus}
