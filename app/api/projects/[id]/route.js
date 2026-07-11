@@ -63,6 +63,7 @@ export async function PUT(request, { params }) {
       paidAmount,
       startDate,
       estimatedEnd,
+      client,
     } = body;
 
     if (orderId !== undefined && !String(orderId).trim()) {
@@ -86,7 +87,23 @@ export async function PUT(request, { params }) {
       );
     }
 
-    const data = {
+    if (client !== undefined) {
+      if (!client?.name || !String(client.name).trim()) {
+        return NextResponse.json(
+          { error: "Nama klien wajib diisi" },
+          { status: 400 }
+        );
+      }
+
+      if (!client?.phone || !String(client.phone).trim()) {
+        return NextResponse.json(
+          { error: "Nomor HP klien wajib diisi" },
+          { status: 400 }
+        );
+      }
+    }
+
+    const projectData = {
       ...(orderId !== undefined && { orderId: String(orderId).trim() }),
       ...(name !== undefined && { name: String(name).trim() }),
       ...(type !== undefined && { type: String(type).trim() }),
@@ -116,18 +133,52 @@ export async function PUT(request, { params }) {
         );
       }
 
-      data.progress = Math.min(100, Math.max(0, parsedProgress));
+      projectData.progress = Math.min(100, Math.max(0, parsedProgress));
     }
 
-    const project = await prisma.project.update({
-      where: { id },
-      data,
-      include: {
-        client: true,
-        stages: { orderBy: { order: "asc" } },
-        updates: { orderBy: { createdAt: "desc" } },
-      },
+    const project = await prisma.$transaction(async (tx) => {
+      const existingProject = await tx.project.findUnique({
+        where: { id },
+        select: { clientId: true },
+      });
+
+      if (!existingProject) return null;
+
+      if (Object.keys(projectData).length > 0) {
+        await tx.project.update({
+          where: { id },
+          data: projectData,
+        });
+      }
+
+      if (client !== undefined) {
+        await tx.client.update({
+          where: { id: existingProject.clientId },
+          data: {
+            name: String(client.name).trim(),
+            phone: String(client.phone).trim(),
+            email: client.email ? String(client.email).trim() : null,
+            company: client.company ? String(client.company).trim() : null,
+          },
+        });
+      }
+
+      return tx.project.findUnique({
+        where: { id },
+        include: {
+          client: true,
+          stages: { orderBy: { order: "asc" } },
+          updates: { orderBy: { createdAt: "desc" } },
+        },
+      });
     });
+
+    if (!project) {
+      return NextResponse.json(
+        { error: "Project tidak ditemukan" },
+        { status: 404 }
+      );
+    }
 
     return NextResponse.json(project);
   } catch (error) {

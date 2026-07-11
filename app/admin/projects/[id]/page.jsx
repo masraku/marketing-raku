@@ -53,6 +53,17 @@ function toDateInputValue(dateString) {
   return new Date(dateString).toISOString().slice(0, 10);
 }
 
+async function readApiResponse(response) {
+  const text = await response.text();
+  if (!text) return {};
+
+  try {
+    return JSON.parse(text);
+  } catch {
+    return { error: text };
+  }
+}
+
 export default function ProjectDetailPage() {
   const params = useParams();
   const router = useRouter();
@@ -61,6 +72,7 @@ export default function ProjectDetailPage() {
   const [saving, setSaving] = useState(false);
   const [infoSaving, setInfoSaving] = useState(false);
   const [infoError, setInfoError] = useState("");
+  const [infoSuccess, setInfoSuccess] = useState("");
   const [msg, setMsg] = useState("");
   const [msgType, setMsgType] = useState("update");
 
@@ -128,11 +140,16 @@ export default function ProjectDetailPage() {
 
     setInfoSaving(true);
     setInfoError("");
+    setInfoSuccess("");
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15_000);
 
     try {
       const projectRes = await fetch(`/api/projects/${params.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
+        signal: controller.signal,
         body: JSON.stringify({
           orderId,
           name: projectName,
@@ -142,44 +159,32 @@ export default function ProjectDetailPage() {
           paidAmount: project.paidAmount || "",
           startDate: toDateInputValue(project.startDate),
           estimatedEnd: toDateInputValue(project.estimatedEnd),
+          client: {
+            name: clientName,
+            phone: clientPhone,
+            email: project.client?.email || "",
+            company: project.client?.company || "",
+          },
         }),
       });
-      const updatedProject = await projectRes.json();
+      const updatedProject = await readApiResponse(projectRes);
 
       if (!projectRes.ok) {
         setInfoError(updatedProject.error || "Gagal mengupdate project");
         return;
       }
 
-      let updatedClient = updatedProject.client;
-
-      if (project.client?.id) {
-        const clientRes = await fetch(`/api/clients/${project.client.id}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            name: clientName,
-            phone: clientPhone,
-            email: project.client.email || "",
-            company: project.client.company || "",
-          }),
-        });
-        const clientData = await clientRes.json();
-
-        if (!clientRes.ok) {
-          setProject(updatedProject);
-          setInfoError(clientData.error || "Gagal mengupdate nama klien");
-          return;
-        }
-
-        updatedClient = { ...updatedProject.client, ...clientData };
-      }
-
-      setProject({ ...updatedProject, client: updatedClient });
+      setProject(updatedProject);
+      setInfoSuccess("Pesanan berhasil disimpan");
     } catch (e) {
       console.error(e);
-      setInfoError("Gagal menyimpan informasi project");
+      setInfoError(
+        e.name === "AbortError"
+          ? "Request terlalu lama. Coba simpan lagi."
+          : "Gagal menyimpan informasi project",
+      );
     } finally {
+      clearTimeout(timeoutId);
       setInfoSaving(false);
     }
   }
@@ -510,6 +515,9 @@ export default function ProjectDetailPage() {
               </div>
               {infoError && (
                 <p className="text-red-400 text-sm mt-3">{infoError}</p>
+              )}
+              {infoSuccess && (
+                <p className="text-green-400 text-sm mt-3">{infoSuccess}</p>
               )}
             </div>
 
