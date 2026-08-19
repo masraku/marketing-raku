@@ -14,7 +14,7 @@ export const projects = [
       "Platform pencarian kerja sederhana dengan fitur lowongan, pelamar, dan dashboard admin untuk Dinas Tenaga Kerja.",
     tags: ["Next.js", "Tailwind CSS", "Full Stack"],
     image: "/assets/images/disnaker.jpg",
-    url: "https://kerjasimpel.vercel.app/",
+    url: "https://prototypesiapkerja.vercel.app/",
   },
   {
     title: "Mulia Berkat Alkes",
