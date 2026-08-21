@@ -242,16 +242,18 @@ export default function ProjectDetailPage() {
 
   function formatPhone(raw) {
     let num = (raw || "").replace(/[\s\-\(\)]/g, "");
-    if (num.startsWith("+62")) num = num.slice(1);      // +62 → 62
-    else if (num.startsWith("08")) num = "62" + num.slice(1); // 08xx → 628xx
-    else if (num.startsWith("8")) num = "62" + num;     // 8xx → 628xx
+    if (num.startsWith("+62"))
+      num = num.slice(1); // +62 → 62
+    else if (num.startsWith("08"))
+      num = "62" + num.slice(1); // 08xx → 628xx
+    else if (num.startsWith("8")) num = "62" + num; // 8xx → 628xx
     return num;
   }
 
   function waLink() {
     const base = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
     const ph = formatPhone(project.client?.phone);
-    const t = `🔔 *Update — ${project.name}*\nProgress: ${project.progress}%\nCek: ${base}/track/${project.orderId}`;
+    const t = `✅ *Update — ${project.name}*\nProgress: ${project.progress}%\nCek: ${base}/track/${project.orderId}`;
     return `https://wa.me/${ph}?text=${encodeURIComponent(t)}`;
   }
 
